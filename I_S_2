@@ -20,6 +20,25 @@ namespace AESEncryptor
         {
             Console.WriteLine("AES Encryption/Decryption Application");
 
+            Console.WriteLine("\nChoose operation: (1) Encrypt, (2) Decrypt");
+            string operationInput = Console.ReadLine();
+
+            if (operationInput == "1")
+            {
+                EncryptAndSaveToFile();
+            }
+            else if (operationInput == "2")
+            {
+                DecryptFromFile();
+            }
+            else
+            {
+                Console.WriteLine("Invalid operation. Exiting.");
+            }
+        }
+
+        public static void EncryptAndSaveToFile()
+        {
             Console.WriteLine("\nEnter the plaintext message:");
             string plaintext = Console.ReadLine();
 
@@ -63,38 +82,62 @@ namespace AESEncryptor
 
             // Save encrypted text to file
             SaveToFile(encryptedText);
+        }
 
-            Console.WriteLine("\nReading encrypted text from file:");
-            string encryptedFromFile = ReadFromFile();
-            Console.WriteLine($"Encrypted Text from File: {encryptedFromFile}");
+        public static void DecryptFromFile()
+        {
+            Console.WriteLine("\nEnter the file path for decryption:");
+            string filePathForDecryption = Console.ReadLine();
 
-            try
+            if (File.Exists(filePathForDecryption))
             {
-                // Decrypt text from file
-                string decryptedText;
-                if (encryptionMode == EncryptionModes.CBC || encryptionMode == EncryptionModes.CFB)
-                {
-                    Console.WriteLine("Enter the Initialization Vector (IV) used during encryption:");
-                    string iv = Console.ReadLine();
+                // Read encrypted text from the selected file
+                string encryptedFromFile = File.ReadAllText(filePathForDecryption);
+                Console.WriteLine($"Encrypted Text from File: {encryptedFromFile}");
 
-                    if (string.IsNullOrEmpty(iv))
+                Console.WriteLine("Enter the secret key used for encryption:");
+                string key = Console.ReadLine();
+
+                Console.WriteLine("Choose encryption mode used for encryption (ECB, CBC, CFB):");
+                string modeInput = Console.ReadLine();
+                if (!Enum.TryParse(modeInput, out EncryptionModes encryptionMode))
+                {
+                    Console.WriteLine("Invalid encryption mode. Exiting.");
+                    return;
+                }
+
+                try
+                {
+                    // Decrypt text from file
+                    string decryptedText;
+                    if (encryptionMode == EncryptionModes.CBC || encryptionMode == EncryptionModes.CFB)
                     {
-                        Console.WriteLine("IV cannot be empty for CBC and CFB modes. Exiting.");
-                        return;
+                        Console.WriteLine("Enter the Initialization Vector (IV) used during encryption:");
+                        string iv = Console.ReadLine();
+
+                        if (string.IsNullOrEmpty(iv))
+                        {
+                            Console.WriteLine("IV cannot be empty for CBC and CFB modes. Exiting.");
+                            return;
+                        }
+
+                        decryptedText = Decrypt(encryptedFromFile, key, encryptionMode, iv);
+                    }
+                    else
+                    {
+                        decryptedText = Decrypt(encryptedFromFile, key, encryptionMode);
                     }
 
-                    decryptedText = Decrypt(encryptedFromFile, key, encryptionMode, iv);
+                    Console.WriteLine($"Decrypted Text: {decryptedText}");
                 }
-                else
+                catch (CryptographicException ex)
                 {
-                    decryptedText = Decrypt(encryptedFromFile, key, encryptionMode);
+                    Console.WriteLine($"Decryption failed: {ex.Message}");
                 }
-
-                Console.WriteLine($"Decrypted Text: {decryptedText}");
             }
-            catch (CryptographicException ex)
+            else
             {
-                Console.WriteLine($"Decryption failed: {ex.Message}");
+                Console.WriteLine("File not found. Exiting.");
             }
         }
 
