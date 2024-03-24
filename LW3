@@ -1,0 +1,95 @@
+import random
+import json
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def extended_gcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = extended_gcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def mod_inverse(a, m):
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def generate_keypair(p, q):
+    n = p * q
+    phi = (p - 1) * (q - 1)
+
+    e = random.randrange(1, phi)
+    while gcd(e, phi) != 1:
+        e = random.randrange(1, phi)
+
+    d = mod_inverse(e, phi)
+
+    return ((n, e), d)
+
+def encrypt(public_key, plaintext):
+    n, e = public_key
+    cipher = [pow(ord(char), e, n) for char in plaintext]
+    return cipher
+
+def decrypt(private_key, ciphertext):
+    n, d = private_key
+    plain = [chr(pow(char, d, n)) for char in ciphertext]
+    return ''.join(plain)
+
+def find_primes_from_n(n):
+    # Implement your logic to find the two prime numbers p and q from n
+    return p, q
+
+def compute_private_key(p, q, e):
+    phi_n = (p - 1) * (q - 1)
+    d = mod_inverse(e, phi_n)
+    return d
+
+# User input for text
+text = input("Enter the text you want to encrypt: ")
+
+# Example key generation
+p = 61
+q = 53
+public_key, private_key = generate_keypair(p, q)
+
+# Encryption
+encrypted_text = encrypt(public_key, text)
+print("Encrypted Text:", encrypted_text)
+
+# Save ciphertext and public/private key to a file
+data = {
+    "ciphertext": encrypted_text,
+    "public_key": public_key,
+    "private_key": private_key
+}
+
+filename = "rsa_data.json"  # File name to save the data
+
+with open(filename, "w") as file:
+    json.dump(data, file)
+
+print("Ciphertext y and public/private key (n, e, d) saved in", filename)
+
+# Read ciphertext y and public/private key from the file
+with open(filename, "r") as file:
+    data = json.load(file)
+    ciphertext_y = data["ciphertext"]
+    n, e = data["public_key"]
+    private_key = data["private_key"]
+
+# Find prime numbers p and q from n
+p, q = find_primes_from_n(n)
+
+# Compute private key
+decrypted_private_key = (n, private_key)
+
+# Decrypt ciphertext y
+decrypted_text = decrypt(decrypted_private_key, ciphertext_y)
+print("Decrypted Text:", decrypted_text)
