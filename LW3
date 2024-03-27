@@ -1,5 +1,6 @@
 import random
 import json
+import os
 
 def gcd(a, b):
     while b != 0:
@@ -25,8 +26,10 @@ def generate_keypair(p, q):
     phi = (p - 1) * (q - 1)
 
     e = random.randrange(1, phi)
-    while gcd(e, phi) != 1:
+    g = gcd(e, phi)
+    while g != 1:
         e = random.randrange(1, phi)
+        g = gcd(e, phi)
 
     d = mod_inverse(e, phi)
 
@@ -39,27 +42,50 @@ def encrypt(public_key, plaintext):
 
 def decrypt(private_key, ciphertext):
     n, d = private_key
-    plain = [chr(pow(char, d, n)) for char in ciphertext]
-    return ''.join(plain)
+    plain = [pow(char, d, n) for char in ciphertext]
+    return ''.join([chr(i) for i in plain])  # Convert ASCII back to characters
 
-def find_primes_from_n(n):
-    # Implement your logic to find the two prime numbers p and q from n
-    return p, q
+def factorize(n):
+    factors = []
+    # This is a naive approach and not efficient for large numbers.
+    for i in range(2, n):
+        while n % i == 0:
+            factors.append(i)
+            n //= i
+    if n > 1:
+        factors.append(n)
+    return factors
 
-def compute_private_key(p, q, e):
-    phi_n = (p - 1) * (q - 1)
-    d = mod_inverse(e, phi_n)
-    return d
+# Function to check if a number is prime
+def is_prime(num):
+    if num <= 1:
+        return False
+    elif num == 2:
+        return True
+    elif num % 2 == 0:
+        return False
+    else:
+        for i in range(3, int(num ** 0.5) + 1, 2):
+            if num % i == 0:
+                return False
+        return True
 
 # User input for text
 text = input("Enter the text you want to encrypt: ")
 
-# Example key generation
-p = 61
-q = 53
+# User input for prime numbers
+p = int(input("Enter the first prime number: "))
+q = int(input("Enter the second prime number: "))
+
+# Check if both numbers are prime
+if not (is_prime(p) and is_prime(q)):
+    print("Both numbers must be prime.")
+    exit()
+
+# Generate public and private keys
 public_key, private_key = generate_keypair(p, q)
 
-# Encryption
+# Encrypt the plaintext using the public key
 encrypted_text = encrypt(public_key, text)
 print("Encrypted Text:", encrypted_text)
 
@@ -75,21 +101,22 @@ filename = "rsa_data.json"  # File name to save the data
 with open(filename, "w") as file:
     json.dump(data, file)
 
-print("Ciphertext y and public/private key (n, e, d) saved in", filename)
+print("Ciphertext and public/private key (n, e, d) saved in", filename)
 
-# Read ciphertext y and public/private key from the file
-with open(filename, "r") as file:
-    data = json.load(file)
-    ciphertext_y = data["ciphertext"]
-    n, e = data["public_key"]
-    private_key = data["private_key"]
+# Ask user for the file to decrypt
+decrypt_filename = input("Enter the filename to decrypt: ")
 
-# Find prime numbers p and q from n
-p, q = find_primes_from_n(n)
+# Check if file exists
+if os.path.exists(decrypt_filename):
+    # Read ciphertext and public/private key from the file
+    with open(decrypt_filename, "r") as file:
+        data = json.load(file)
+        ciphertext_y = data["ciphertext"]
+        n, e = data["public_key"]
+        private_key = data["private_key"]
 
-# Compute private key
-decrypted_private_key = (n, private_key)
-
-# Decrypt ciphertext y
-decrypted_text = decrypt(decrypted_private_key, ciphertext_y)
-print("Decrypted Text:", decrypted_text)
+    # Decrypt ciphertext
+    decrypted_text = decrypt((n, private_key), ciphertext_y)
+    print("Decrypted Text:", decrypted_text)
+else:
+    print("File does not exist.")
