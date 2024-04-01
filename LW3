@@ -70,6 +70,14 @@ def is_prime(num):
                 return False
         return True
 
+def decrypt_with_factorization(private_key, ciphertext):
+    n, d = private_key
+    factors = factorize(n)  # Factorize the modulus n into prime factors
+    phi_n = (factors[0] - 1) * (factors[1] - 1)  # Compute Euler's totient function φ(n)
+    d = mod_inverse(e, phi_n)  # Compute the private key exponent d
+    plain = [pow(char, d, n) for char in ciphertext]
+    return ''.join([chr(i) for i in plain])  # Convert ASCII back to characters
+
 # User input for text
 text = input("Enter the text you want to encrypt: ")
 
@@ -116,7 +124,7 @@ if os.path.exists(decrypt_filename):
         private_key = data["private_key"]
 
     # Decrypt ciphertext
-    decrypted_text = decrypt((n, private_key), ciphertext_y)
+    decrypted_text = decrypt_with_factorization((n, private_key), ciphertext_y)
     print("Decrypted Text:", decrypted_text)
 else:
     print("File does not exist.")
