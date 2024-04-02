@@ -71,60 +71,71 @@ def is_prime(num):
         return True
 
 def decrypt_with_factorization(private_key, ciphertext):
-    n, d = private_key
+    n, _ = private_key
     factors = factorize(n)  # Factorize the modulus n into prime factors
     phi_n = (factors[0] - 1) * (factors[1] - 1)  # Compute Euler's totient function φ(n)
-    d = mod_inverse(e, phi_n)  # Compute the private key exponent d
+    d = mod_inverse(private_key[1], phi_n)  # Compute the private key exponent d
     plain = [pow(char, d, n) for char in ciphertext]
     return ''.join([chr(i) for i in plain])  # Convert ASCII back to characters
 
+def menu():
+    print("Choose an option:")
+    print("1. Encrypt text")
+    print("2. Decrypt from file")
+    choice = input("Enter your choice: ")
+    return choice
+
 # User input for text
-text = input("Enter the text you want to encrypt: ")
+choice = menu()
 
-# User input for prime numbers
-p = int(input("Enter the first prime number: "))
-q = int(input("Enter the second prime number: "))
+if choice == "1":
+    text = input("Enter the text you want to encrypt: ")
+    # User input for prime numbers
+    p = int(input("Enter the first prime number: "))
+    q = int(input("Enter the second prime number: "))
 
-# Check if both numbers are prime
-if not (is_prime(p) and is_prime(q)):
-    print("Both numbers must be prime.")
-    exit()
+    # Check if both numbers are prime
+    if not (is_prime(p) and is_prime(q)):
+        print("Both numbers must be prime.")
+        exit()
 
-# Generate public and private keys
-public_key, private_key = generate_keypair(p, q)
+    # Generate public and private keys
+    public_key, private_key = generate_keypair(p, q)
 
-# Encrypt the plaintext using the public key
-encrypted_text = encrypt(public_key, text)
-print("Encrypted Text:", encrypted_text)
+    # Encrypt the plaintext using the public key
+    encrypted_text = encrypt(public_key, text)
+    print("Encrypted Text:", encrypted_text)
 
-# Save ciphertext and public/private key to a file
-data = {
-    "ciphertext": encrypted_text,
-    "public_key": public_key,
-    "private_key": private_key
-}
+    # Save ciphertext and public key to a file
+    data = {
+        "ciphertext": encrypted_text,
+        "public_key": public_key
+    }
 
-filename = "rsa_data.json"  # File name to save the data
+    filename = "rsa_data.json"  # File name to save the data
 
-with open(filename, "w") as file:
-    json.dump(data, file)
+    with open(filename, "w") as file:
+        json.dump(data, file)
 
-print("Ciphertext and public/private key (n, e, d) saved in", filename)
+    print("Ciphertext and public key (n, e) saved in", filename)
 
+elif choice == "2":
 # Ask user for the file to decrypt
-decrypt_filename = input("Enter the filename to decrypt: ")
+  decrypt_filename = input("Enter the filename to decrypt: ")
 
-# Check if file exists
-if os.path.exists(decrypt_filename):
-    # Read ciphertext and public/private key from the file
-    with open(decrypt_filename, "r") as file:
-        data = json.load(file)
-        ciphertext_y = data["ciphertext"]
-        n, e = data["public_key"]
-        private_key = data["private_key"]
+  # Check if file exists
+  if os.path.exists(decrypt_filename):
+      # Read ciphertext and public key from the file
+      with open(decrypt_filename, "r") as file:
+          data = json.load(file)
+          ciphertext_y = data["ciphertext"]
+          public_key = data["public_key"]
+  
+      # Decrypt ciphertext using the factorization method
+      decrypted_text = decrypt_with_factorization(public_key, ciphertext_y)
+      print("Decrypted Text:", decrypted_text)
+  else:
+      print("File does not exist.")
 
-    # Decrypt ciphertext
-    decrypted_text = decrypt_with_factorization((n, private_key), ciphertext_y)
-    print("Decrypted Text:", decrypted_text)
 else:
-    print("File does not exist.")
+    print("Invalid choice.")
