@@ -1,0 +1,44 @@
+import os
+from multiprocessing import Pool
+import time
+from docx import Document
+
+def process_docx_file(name, search_string):
+    ''' Process one .docx file: count number of paragraphs and words and search for a string '''
+    paragraph_count = 0
+    word_count = 0
+    found_string = False
+
+    doc = Document(name)
+    for paragraph in doc.paragraphs:
+        paragraph_count += 1
+        word_count += len(paragraph.text.split())
+        if search_string in paragraph.text:
+            found_string = True
+            break
+
+    return name, paragraph_count, word_count, found_string
+
+def process_files_parallel(arg, dirname, names, search_string):
+    ''' Process each .docx file in parallel via Pool.map() '''
+    pool = Pool()
+    results = pool.starmap(process_docx_file, [(os.path.join(dirname, name), search_string) for name in names if name.endswith('.docx')])
+    pool.close()
+    pool.join()
+    return results
+
+if __name__ == '__main__':
+    search_string = input("Enter the string to search for: ")  # Prompt user to enter search string
+    start = time.time()
+    files_dir = os.getcwd()  # Current directory of the project
+    files = ['Python.1.docx', 'Python.2.docx', 'Python.3.docx']  # Names of your files
+    results = process_files_parallel(None, files_dir, files, search_string)
+    print("Time taken for processing .docx files in parallel:", time.time() - start)
+
+    with open('search_results.txt', 'w') as f:
+        for result in results:
+            f.write("File: {}\n".format(result[0]))
+            f.write("Paragraph count: {}\n".format(result[1]))
+            f.write("Word count: {}\n".format(result[2]))
+            f.write("String found: {}\n".format(result[3]))
+            f.write("\n")
