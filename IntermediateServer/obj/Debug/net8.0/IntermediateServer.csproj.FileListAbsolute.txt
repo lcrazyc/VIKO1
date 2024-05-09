@@ -1,0 +1,14 @@
+D:\С#\ConsoleApp1\IntermediateServer\bin\Debug\net8.0\IntermediateServer.exe
+D:\С#\ConsoleApp1\IntermediateServer\bin\Debug\net8.0\IntermediateServer.deps.json
+D:\С#\ConsoleApp1\IntermediateServer\bin\Debug\net8.0\IntermediateServer.runtimeconfig.json
+D:\С#\ConsoleApp1\IntermediateServer\bin\Debug\net8.0\IntermediateServer.dll
+D:\С#\ConsoleApp1\IntermediateServer\bin\Debug\net8.0\IntermediateServer.pdb
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.GeneratedMSBuildEditorConfig.editorconfig
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.AssemblyInfoInputs.cache
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.AssemblyInfo.cs
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.csproj.CoreCompileInputs.cache
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.dll
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\refint\IntermediateServer.dll
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.pdb
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\IntermediateServer.genruntimeconfig.cache
+D:\С#\ConsoleApp1\IntermediateServer\obj\Debug\net8.0\ref\IntermediateServer.dll
