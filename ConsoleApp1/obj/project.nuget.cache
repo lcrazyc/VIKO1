@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "xDLBfe987yCoLEihhwyS4kDPzkqPqHDqyB2fjddML76JDMmu0HQe9NpeGnkp52cPVW1EIEu4Hq71ZFsNZp4vBg==",
+  "success": true,
+  "projectFilePath": "D:\\С#\\ConsoleApp1\\ConsoleApp1\\SenderApplication.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ЮрійВасильєв\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.29\\microsoft.windowsdesktop.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\ЮрійВасильєв\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.29\\microsoft.netcore.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\ЮрійВасильєв\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.29\\microsoft.aspnetcore.app.ref.6.0.29.nupkg.sha512",
+    "C:\\Users\\ЮрійВасильєв\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.29\\microsoft.netcore.app.host.win-x64.6.0.29.nupkg.sha512"
+  ],
+  "logs": []
+}

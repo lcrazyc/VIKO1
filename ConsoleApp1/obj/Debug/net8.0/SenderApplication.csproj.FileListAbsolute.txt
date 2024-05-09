@@ -1,0 +1,14 @@
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.GeneratedMSBuildEditorConfig.editorconfig
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.AssemblyInfoInputs.cache
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.AssemblyInfo.cs
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.csproj.CoreCompileInputs.cache
+D:\С#\ConsoleApp1\ConsoleApp1\bin\Debug\net8.0\SenderApplication.exe
+D:\С#\ConsoleApp1\ConsoleApp1\bin\Debug\net8.0\SenderApplication.deps.json
+D:\С#\ConsoleApp1\ConsoleApp1\bin\Debug\net8.0\SenderApplication.runtimeconfig.json
+D:\С#\ConsoleApp1\ConsoleApp1\bin\Debug\net8.0\SenderApplication.dll
+D:\С#\ConsoleApp1\ConsoleApp1\bin\Debug\net8.0\SenderApplication.pdb
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.dll
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\refint\SenderApplication.dll
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.pdb
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\SenderApplication.genruntimeconfig.cache
+D:\С#\ConsoleApp1\ConsoleApp1\obj\Debug\net8.0\ref\SenderApplication.dll
