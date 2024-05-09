@@ -1,0 +1,14 @@
+D:\С#\ConsoleApp1\ReceiverApplication\bin\Debug\net8.0\ReceiverApplication.exe
+D:\С#\ConsoleApp1\ReceiverApplication\bin\Debug\net8.0\ReceiverApplication.deps.json
+D:\С#\ConsoleApp1\ReceiverApplication\bin\Debug\net8.0\ReceiverApplication.runtimeconfig.json
+D:\С#\ConsoleApp1\ReceiverApplication\bin\Debug\net8.0\ReceiverApplication.dll
+D:\С#\ConsoleApp1\ReceiverApplication\bin\Debug\net8.0\ReceiverApplication.pdb
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.GeneratedMSBuildEditorConfig.editorconfig
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.AssemblyInfoInputs.cache
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.AssemblyInfo.cs
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.csproj.CoreCompileInputs.cache
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.dll
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\refint\ReceiverApplication.dll
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.pdb
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ReceiverApplication.genruntimeconfig.cache
+D:\С#\ConsoleApp1\ReceiverApplication\obj\Debug\net8.0\ref\ReceiverApplication.dll
