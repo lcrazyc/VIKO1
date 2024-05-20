@@ -1,0 +1,225 @@
+import csv
+import os
+import base64
+import bcrypt
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.fernet import Fernet
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+import pyperclip
+import secrets
+import string
+
+# Constants
+USERS_FILE = 'users.csv'
+PASSWORDS_DIR = 'passwords/'
+SALT_FILE = 'salt.key'
+
+def generate_salt():
+    return os.urandom(16)
+
+def get_fernet_key(password, salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend()
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key
+
+def encrypt_data(data, key):
+    f = Fernet(key)
+    return f.encrypt(data.encode())
+
+def decrypt_data(data, key):
+    f = Fernet(key)
+    return f.decrypt(data).decode()
+
+def write_encrypted_file(data, key, filepath):
+    encrypted_data = encrypt_data(data, key)
+    with open(filepath, 'wb') as file:
+        file.write(encrypted_data)
+
+def read_encrypted_file(key, filepath):
+    try:
+        with open(filepath, 'rb') as file:
+            encrypted_data = file.read()
+        return decrypt_data(encrypted_data, key)
+    except FileNotFoundError:
+        return ""
+    except Exception as e:
+        print(f"Error reading encrypted file: {e}")
+        return ""
+
+def load_passwords(key, filepath):
+    data = read_encrypted_file(key, filepath)
+    passwords = {}
+    if data:
+        reader = csv.reader(data.splitlines())
+        for row in reader:
+            passwords[row[0]] = row[1:]
+    return passwords
+
+def save_passwords(passwords, key, filepath):
+    data = '\n'.join([','.join([title] + info) for title, info in passwords.items()])
+    write_encrypted_file(data, key, filepath)
+
+def add_password(title, password, url, other_info, passwords, key, filepath):
+    passwords[title] = [encrypt_data(password, key), url, other_info]
+    save_passwords(passwords, key, filepath)
+
+def delete_password(title, passwords, key, filepath):
+    if title in passwords:
+        del passwords[title]
+        save_passwords(passwords, key, filepath)
+
+def update_password(title, new_password, passwords, key, filepath):
+    if title in passwords:
+        passwords[title][0] = encrypt_data(new_password, key)
+        save_passwords(passwords, key, filepath)
+
+def search_password(title, passwords):
+    return passwords.get(title, None)
+
+def random_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(characters) for i in range(length))
+
+def copy_to_clipboard(password):
+    pyperclip.copy(password)
+    pyperclip.paste()
+
+# User Management Functions
+def register_user():
+    username = simpledialog.askstring("Registration", "Enter a username:")
+    if username:
+        password = simpledialog.askstring("Registration", "Enter a password:", show='*')
+        if password:
+            hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+            with open(USERS_FILE, 'a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([username, hashed_password.decode()])
+            os.makedirs(PASSWORDS_DIR, exist_ok=True)
+            messagebox.showinfo("Registration", "User registered successfully!")
+
+def login():
+    username = simpledialog.askstring("Login", "Enter your username:")
+    if username:
+        password = simpledialog.askstring("Login", "Enter your password:", show='*')
+        if password and validate_user(username, password):
+            user_file = f"{PASSWORDS_DIR}{username}_passwords.csv.enc"
+            salt = load_or_generate_salt(username)
+            key = get_fernet_key(password, salt)
+            passwords = load_passwords(key, user_file)
+            main_window(username, key, passwords)
+        else:
+            messagebox.showerror("Login", "Invalid username or password.")
+
+def validate_user(username, password):
+    if not os.path.exists(USERS_FILE):
+        return False
+    with open(USERS_FILE, newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[0] == username:
+                try:
+                    if bcrypt.checkpw(password.encode(), row[1].encode()):
+                        return True
+                except ValueError:
+                    print("Invalid salt format for user:", username)
+                    return False
+    return False
+
+def load_or_generate_salt(username):
+    salt_path = f"{PASSWORDS_DIR}{username}_salt.key"
+    if os.path.exists(salt_path):
+        with open(salt_path, 'rb') as file:
+            salt = file.read()
+    else:
+        salt = generate_salt()
+        with open(salt_path, 'wb') as file:
+            file.write(salt)
+    return salt
+
+def logout(key, passwords, username):
+    user_file = f"{PASSWORDS_DIR}{username}_passwords.csv.enc"
+    save_passwords(passwords, key, user_file)
+    messagebox.showinfo("Logout", "You have been logged out.")
+    exit()
+
+def add_password_gui(key, passwords, filepath):
+    title = simpledialog.askstring("Password Manager", "Enter the title:")
+    if title:
+        password = simpledialog.askstring("Password Manager", "Enter the password:")
+        url = simpledialog.askstring("Password Manager", "Enter the URL:")
+        other_info = simpledialog.askstring("Password Manager", "Enter other information:")
+        add_password(title, password, url, other_info, passwords, key, filepath)
+        messagebox.showinfo("Password Manager", "Password added successfully!")
+
+def delete_password_gui(key, passwords, filepath):
+    title = simpledialog.askstring("Password Manager", "Enter the title to delete:")
+    if title:
+        delete_password(title, passwords, key, filepath)
+        messagebox.showinfo("Password Manager", "Password deleted successfully!")
+
+def update_password_gui(key, passwords, filepath):
+    title = simpledialog.askstring("Password Manager", "Enter the title to update:")
+    if title:
+        new_password = simpledialog.askstring("Password Manager", "Enter the new password:")
+        update_password(title, new_password, passwords, key, filepath)
+        messagebox.showinfo("Password Manager", "Password updated successfully!")
+
+def show_password(key, encrypted_password):
+    decrypted_password = decrypt_data(encrypted_password, key)
+    messagebox.showinfo("Password Manager", f"Decrypted Password: {decrypted_password}")
+
+def search_password_gui(key, passwords):
+    title = simpledialog.askstring("Password Manager", "Enter the title to search:")
+    if title:
+        result = search_password(title, passwords)
+        if result:
+            encrypted_password = result[0]
+            url = result[1]
+            other_info = result[2]
+
+            result_window = tk.Toplevel()
+            result_window.title("Search Result")
+
+            tk.Label(result_window, text=f"Encrypted Password: {encrypted_password}").pack()
+            tk.Button(result_window, text="Show", command=lambda: show_password(key, encrypted_password)).pack()
+            tk.Label(result_window, text=f"URL: {url}").pack()
+            tk.Label(result_window, text=f"Other Info: {other_info}").pack()
+            tk.Button(result_window, text="Copy Password", command=lambda: copy_to_clipboard(decrypt_data(encrypted_password, key))).pack()
+        else:
+            messagebox.showinfo("Password Manager", "Password not found.")
+
+def main_window(username, key, passwords):
+    root = tk.Tk()
+    root.title("Password Manager")
+
+    user_file = f"{PASSWORDS_DIR}{username}_passwords.csv.enc"
+
+    tk.Button(root, text="Add Password", command=lambda: add_password_gui(key, passwords, user_file)).pack()
+    tk.Button(root, text="Delete Password", command=lambda: delete_password_gui(key, passwords, user_file)).pack()
+    tk.Button(root, text="Update Password", command=lambda: update_password_gui(key, passwords, user_file)).pack()
+    tk.Button(root, text="Search Password", command=lambda: search_password_gui(key, passwords)).pack()
+    tk.Button(root, text="Generate Random Password", command=lambda: copy_to_clipboard(random_password())).pack()
+    tk.Button(root, text="Logout", command=lambda: logout(key, passwords, username)).pack()
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    if not os.path.exists(PASSWORDS_DIR):
+        os.makedirs(PASSWORDS_DIR)
+
+    root = tk.Tk()
+    root.title("Password Manager")
+
+    tk.Button(root, text="Register", command=register_user).pack()
+    tk.Button(root, text="Login", command=login).pack()
+
+    root.mainloop()
